@@ -1,0 +1,15 @@
+id: "page-tree"
+title: "Page Tree"
+type: "object"
+properties:
+  data:
+    type: "object"
+    properties:
+      title: {type: "string"}
+  children:
+    type: "object"
+    properties:
+      data:
+        type: "object"
+        properties:
+          title: {type: "string"}

@@ -1,0 +1,12 @@
+id: "post"
+title: "Post"
+type: "object"
+required: ["title"]
+properties:
+  title: {type: "string", maxLength: 255}
+  excerpt: {type: "string"}
+  subtitle: {type: "string"}
+
+  published: {type: "boolean"}
+  language: {type: "string", enum: ["de", "en"]}
+  canonical: {type: "string", format: "uri"}

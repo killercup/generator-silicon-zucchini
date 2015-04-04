@@ -1,0 +1,27 @@
+---
+name: "Articles list"
+input:
+  type: 'object'
+  properties:
+    articles:
+      type: 'array'
+---
+{{ include("templates/_head.html", data) }}
+
+{{ include("organisms/nav-main.html", {routes: routes, currentRoute: currentRoute}) }}
+
+<h1>
+  {{data.title}}
+</h1>
+
+<ul>
+{% l(data.articles).pluck('data').each(function (article) { %}
+  <li>
+    <a href="/artikel/{{ article.slug }}">
+      {{ article.title }}
+    </a>
+  </li>
+{% }) %}
+</ul>
+
+{{ include("templates/_tail.html", data) }}

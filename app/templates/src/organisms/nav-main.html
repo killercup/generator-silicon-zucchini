@@ -1,0 +1,15 @@
+---
+name: "Main Navi"
+input:
+  routes:
+    $ref: "#page-tree"
+---
+<nav class="nav-main">
+  <ul>
+  {{
+    include("molecules/nav-main-elements.html", {
+      routes: data.routes, level: 1, maxLevel: 1, currentRoute: currentRoute
+    })
+  }}
+  </ul>
+</nav>

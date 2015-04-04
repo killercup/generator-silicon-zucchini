@@ -1,0 +1,6 @@
+id: "page"
+title: "Page"
+type: "object"
+required: ["title"]
+properties:
+  title: {type: "string"}

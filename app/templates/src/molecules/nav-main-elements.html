@@ -1,0 +1,33 @@
+---
+name: "Main Navi"
+input:
+  type: "object"
+  required: ["routes", "level", "maxLevel"]
+  properties:
+    routes:
+      type: "object"
+      $ref: "#page-tree"
+    level:
+      type: "integer"
+    maxLevel:
+      type: "integer"
+---
+{% l.map(data.routes, function (route, url) { %}
+  {% if (!route.data) { return; } %}
+  <li{{ data.currentRoute === url ? ' class="active"' : '' }}>
+    <a href="{{ path.normalize('/' + url + '/') }}">
+      {{route.data && route.data.title}}
+    </a>
+    {% if ((data.level < data.maxLevel) &&
+      route.children && Object.keys(route.children).length) { %}
+    <ul>
+      {{
+        include("organisms/nav-main-elements.html", {
+          routes: route.children, currentRoute: currentRoute,
+          level: (data.level + 1), maxLevel: data.maxLevel
+        })
+      }}
+    </ul>
+    {% } %}
+  </li>
+{% }) %}
