@@ -11,7 +11,16 @@ var autoprefixer = require('gulp-autoprefixer');
 var connect = require('gulp-connect');
 
 var SiliconZucchini = require('silicon-zucchini');
-var SETTINGS = require('./zucchini-settings');
+var INPUTS = require('./zucchini-settings').inputs;
+var SETTINGS = require('./zucchini-settings').settings;
+
+function getInputs(skipData) {
+  return {
+    data: skipData ? null : INPUTS.getData(SETTINGS.data),
+    templates: INPUTS.getTemplates(SETTINGS.templates),
+    schemas: INPUTS.getSchemas(SETTINGS.schemas)
+  };
+}
 
 /**
  * ## Compile Steps
@@ -22,11 +31,11 @@ function clean(cb) {
 }
 
 function site() {
-  return SiliconZucchini.compile(SETTINGS);
+  return SiliconZucchini.compile(getInputs(), SETTINGS);
 }
 <% if (styleguide) { %>
 function styleguide() {
-  return SiliconZucchini.styleguide(SETTINGS);
+  return SiliconZucchini.styleguide(getInputs(true), SETTINGS);
 }<% } %>
 
 function styles() {

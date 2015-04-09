@@ -28,6 +28,7 @@
     "yosay": "^1.0.2"
   },
   "devDependencies": {
+    "eslint": "^0.18.0",
     "mocha": "^2.2.1"
   }
 }

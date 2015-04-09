@@ -1,5 +1,6 @@
 var path = require('path');
 var l = require('lodash');
+var gulp = require('gulp');
 <% if (posts) { %>var slug = require('slug');
 <% }%>
 var SiliconZucchini = require('silicon-zucchini');
@@ -20,7 +21,6 @@ var ZUCCHINI_SETTINGS = {
   styles: ["src/index.scss", "src/**/*.scss"],
   destination: 'build',
 
-  processData: setDataDefaults,
   createRoutes: createRoutes,
 
   templateHelpers: {
@@ -32,25 +32,6 @@ var ZUCCHINI_SETTINGS = {
 /**
  * ## Functions
  */
-
-function setDataDefaults(dataStream) {
-  return dataStream
-  <% if (posts) { %>.pipe(S.dataDefaults('^posts/', {
-    schema: {$ref: '#post'},
-    slug: function (a) {
-      return slug(a.data.title).toLowerCase();
-    }
-  }))<% } %>
-  .pipe(S.dataDefaults('^pages/', {
-    schema: {$ref: '#page'},
-    permalink: function (p) {
-      return S.stripFileExt(p.relative).replace(/^pages/, '');
-    }
-  }))
-  <% if (posts) { %>.pipe(S.uniqFields(['slug'], '^posts/'))<% } %>
-  .pipe(S.uniqFields(['permalink'], '^pages/'))
-  ;
-}
 
 function createRoutes(data, schemas, getTemplate) {
   return [
@@ -82,4 +63,53 @@ function createRoutes(data, schemas, getTemplate) {
   ];
 }
 
-module.exports = ZUCCHINI_SETTINGS;
+/**
+ * ## Input Streams
+ */
+
+function getData(src) {
+  return gulp.src(src)
+  .pipe(S.loadCson())
+  .pipe(S.loadJson())
+  .pipe(S.loadCsonFrontmatter())
+  .pipe(S.loadMarkdown())
+  <% if (posts) { %>.pipe(S.dataDefaults('^posts/', {
+    schema: {$ref: '#post'},
+    slug: function (a) {
+      return slug(a.data.title).toLowerCase();
+    }
+  }))<% } %>
+  .pipe(S.dataDefaults('^pages/', {
+    schema: {$ref: '#page'},
+    permalink: function (p) {
+      return S.stripFileExt(p.relative).replace(/^pages/, '');
+    }
+  }))
+  <% if (posts) { %>.pipe(S.uniqFields(['slug'], '^posts/'))<% } %>
+  .pipe(S.uniqFields(['permalink'], '^pages/'))
+  ;
+}
+
+function getSchemas(src) {
+  return gulp.src(src)
+  .pipe(S.loadCson())
+  .pipe(S.loadJson())
+  .pipe(S.schemasValidate({requireId: true}))
+  ;
+}
+
+function getTemplates(src) {
+  return gulp.src(src)
+  .pipe(S.loadCsonFrontmatter())
+  .pipe(S.templateValidate())
+  ;
+}
+
+module.exports = {
+  settings: ZUCCHINI_SETTINGS,
+  inputs: {
+    getData: getData,
+    getTemplates: getTemplates,
+    getSchemas: getSchemas
+  }
+};
